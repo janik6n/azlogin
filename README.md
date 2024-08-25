@@ -27,7 +27,7 @@ features:
         tenant_id: "23456-23456"
 ```
 Configuration file location:
-- If the `environment` is `DEV`: `./configuration.yaml`
+- If the `environment` is `DEV`: `./configuration.yaml`. You also need to set environment variable `ENVIRONMENT=DEV`.
 - If the `environment` is `PROD`: `$HOME/azlogin/configuration.yaml`
 
 ## Logging
