@@ -46,6 +46,7 @@ func ReadConfiguration() (*Configuration, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user's home directory, %v", err)
 	}
+	fmt.Println("User's home directory: ", userHomeDirectory)
 
 	// Set the congifuration file location based on the environment
 	configurationFilename := filepath.Join(userHomeDirectory, "azlogin", "configuration.yaml")
@@ -56,6 +57,7 @@ func ReadConfiguration() (*Configuration, error) {
 		}
 		configurationFilename = filepath.Join(currentDirectory, "configuration.yaml")
 	}
+	fmt.Println("Configuration file location and name: ", configurationFilename)
 
 	f, err := os.Open(configurationFilename)
 	if err != nil {
