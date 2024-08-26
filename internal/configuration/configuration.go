@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"gopkg.in/yaml.v3"
@@ -47,9 +48,13 @@ func ReadConfiguration() (*Configuration, error) {
 	}
 
 	// Set the congifuration file location based on the environment
-	configurationFilename := userHomeDirectory + "/azlogin/configuration.yaml"
+	configurationFilename := filepath.Join(userHomeDirectory, "azlogin", "configuration.yaml")
 	if os.Getenv("ENVIRONMENT") == "DEV" {
-		configurationFilename = "./configuration.yaml"
+		currentDirectory, err := os.Getwd()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get current directory, %v", err)
+		}
+		configurationFilename = filepath.Join(currentDirectory, "configuration.yaml")
 	}
 
 	f, err := os.Open(configurationFilename)
