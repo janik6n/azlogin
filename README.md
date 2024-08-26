@@ -1,6 +1,6 @@
 # Azlogin
 
-Azure CLI login helper. You have multipe tenants to login to, but cannot remember the tenant IDs? Azlogin to the rescue!
+Azure CLI login helper. You have multiple tenants to login to, but cannot remember the tenant IDs? Azlogin to the rescue!
 
 
 ## Prerequisites
@@ -21,18 +21,18 @@ general:
 features:
   azlogin:
     tenants:
-      - tenant_name: "alpha.onmicrosoft.com"
-        tenant_id: "12345-12345"
-      - tenant_name: "bravo.onmicrosoft.com"
+      - tenant_name: "Alpha"
+        tenant_id: "alpha.onmicrosoft.com"
+      - tenant_name: "Bravo"
         tenant_id: "23456-23456"
 ```
 Configuration file location:
 - If the `environment` is `DEV`: `./configuration.yaml`. You also need to set environment variable `ENVIRONMENT=DEV`.
-- If the `environment` is `PROD`: `$HOME/azlogin/configuration.yaml`
+- If the `environment` is `PROD`: `$HOME/azlogin/configuration.yaml` in macOS/Linux and `%USERPROFILE%\azlogin\configuration.yaml` in Windows.
 
 ## Logging
 
-The app optionally logs to a file `./azlogin.log` in `DEV` and to `$HOME/azlogin/azlogin.log` in `PROD`.
+The app optionally logs to a file `./azlogin.log` for `DEV` and to `$HOME/azlogin/azlogin.log` in macOS/Linux or `%USERPROFILE%\azlogin/azlogin.log` in Windows for `PROD`.
 
 ## How to run in dev
 
@@ -74,7 +74,7 @@ New GitHub Release is created with [GoReleaser](https://goreleaser.com/ci/action
 
 With the binary releases all you need is the configuration file described above and a binary for your platform.
 
-The binaries in each release are built with [GoReleaser](https://goreleaser.com/ci/actions/) and GitHub Actions. They are not signed or notarized, so warnings may arise when you run the app. Run at your own risk.
+⚠️ The binaries in each release are built with [GoReleaser](https://goreleaser.com/ci/actions/) and GitHub Actions. They are not signed or notarized, so warnings may arise when you run the app. Run at your own risk.
 
 
 ## References

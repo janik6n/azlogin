@@ -42,11 +42,12 @@ func ReadConfiguration() (*Configuration, error) {
 	// read DEV configuration file. Otherwise, read PROD configuration file.
 
 	// Get user's home directory
+	// $HOME in macOS (/Users/me), $HOME in Linux (/home/me), %USERPROFILE% in Windows (c:\users\me)
 	userHomeDirectory, err := os.UserHomeDir()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user's home directory, %v", err)
 	}
-	fmt.Println("User's home directory: ", userHomeDirectory)
+	// fmt.Println("User's home directory: ", userHomeDirectory)
 
 	// Set the congifuration file location based on the environment
 	configurationFilename := filepath.Join(userHomeDirectory, "azlogin", "configuration.yaml")
@@ -57,7 +58,7 @@ func ReadConfiguration() (*Configuration, error) {
 		}
 		configurationFilename = filepath.Join(currentDirectory, "configuration.yaml")
 	}
-	fmt.Println("Configuration file location and name: ", configurationFilename)
+	// fmt.Println("Configuration file location and name: ", configurationFilename)
 
 	f, err := os.Open(configurationFilename)
 	if err != nil {
@@ -72,6 +73,10 @@ func ReadConfiguration() (*Configuration, error) {
 	// Catches unknown fields in yaml, does not catch missing keys
 	dec.KnownFields(true)
 	if err := dec.Decode(&configuration); err != nil {
+		// fmt.Println("Error decoding configuration file: ", err)
+		if err.Error() == "EOF" {
+			return nil, errors.New("configuration file is empty")
+		}
 		return nil, err
 	}
 
