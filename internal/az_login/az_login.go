@@ -12,6 +12,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/janik6n/azlogin/internal/configuration"
+	"github.com/janik6n/azlogin/internal/logger"
 )
 
 type Tenant struct {
@@ -19,9 +20,11 @@ type Tenant struct {
 }
 
 func RunCommand(c configuration.Configuration) (string, error) {
-	fmt.Println("Running az login...")
-	fmt.Println("Tenants:")
-	fmt.Println(c.GetAzTenantNames())
+	// fmt.Println("Running az login...")
+	// fmt.Println("Tenants:")
+	// fmt.Println(c.GetAzTenantNames())
+	logger.LogInfo("Running az login...", c)
+	logger.LogInfo("Tenants: "+strings.Join(c.GetAzTenantNames(), ", "), c)
 
 	var tenantChoices = []string{}
 	if len(c.Features.AzLogin.Tenants) > 0 {
@@ -51,13 +54,15 @@ func RunCommand(c configuration.Configuration) (string, error) {
 		return "", err
 	}
 
-	fmt.Printf("\nSelected tenant:\n")
-	fmt.Printf("  Tenant Name: %s\n", tenant.TenantName)
+	// fmt.Printf("\nSelected tenant:\n")
+	// fmt.Printf("  Tenant Name: %s\n", tenant.TenantName)
+	logger.LogInfo("Selected tenant: "+tenant.TenantName, c)
 	t, err := c.FindAzTenantByName(tenant.TenantName)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("  Tenant Id: %s\n", t.TenantId)
+	// fmt.Printf("  Tenant Id: %s\n", t.TenantId)
+	logger.LogInfo("Tenant Id: "+t.TenantId, c)
 
 	response, err := AzLoginFlow(t)
 	if err != nil {
@@ -69,7 +74,8 @@ func RunCommand(c configuration.Configuration) (string, error) {
 
 func AzLoginFlow(t configuration.Tenant) (string, error) {
 	loginCommand := fmt.Sprintf("az login --tenant %s", t.TenantId)
-	fmt.Println(loginCommand)
+	// fmt.Println(loginCommand)
+	logger.LogInfo(loginCommand, configuration.Configuration{})
 
 	// Login to az cli, pass the command output directly to stdout & stderr
 	args := strings.Split(loginCommand, " ")

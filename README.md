@@ -2,6 +2,10 @@
 
 Azure CLI login helper. You have multiple tenants to login to, but cannot remember the tenant IDs? Azlogin to the rescue!
 
+Functionally & securitywise there is nothing too special; This is just a wrapper for Azure CLI. All the information stored about your tenants is defined [below](#configuration), and all the information is provided by you.
+
+Running the app with the selected tenant will trigger `az login` flow for the selected tenant, and that's it.
+
 
 ## Prerequisites
 
@@ -34,6 +38,14 @@ Configuration file location:
 
 The app optionally logs to a file `./azlogin.log` for `DEV` and to `$HOME/azlogin/azlogin.log` in macOS/Linux or `%USERPROFILE%\azlogin/azlogin.log` in Windows for `PROD`.
 
+
+## Run binary release
+
+With the binary releases all you need is the configuration file described [above](#configuration) and a binary for your platform.
+
+⚠️ The binaries in each release are built with [GoReleaser](https://goreleaser.com/ci/actions/) and GitHub Actions. They are *not signed or notarized*, so warnings may arise when you run the app. Run at your own risk.
+
+
 ## How to run in dev
 
 Before installing:
@@ -42,7 +54,7 @@ Before installing:
 ENVIRONMENT=DEV go run cmd/azlogin/main.go
 ```
 
-## Build and install
+### Build and install
 
 Build, and installation, must be done where the `main` package is located.
 
@@ -55,12 +67,13 @@ go build -o "../../build/azlogin"
 GOARCH=arm64 GOOS=darwin go build -o "../../build/azlogin"
 # For Windows AMD64
 GOARCH=amd64 GOOS=windows go build -o "../../build/azlogin.exe"
-
-# macOS & ZHS: To install, run in project root. Runs the build too.
+```
+There is a little helper script available for installation on macOS & ZHS. To install, run in project root:
+```bash
+# Runs the build too.
 ./install_azlogin.sh
 ```
-
-Install will install the binary to location defined in `.zshrc`:
+The binary will be installed to location defined in `.zshrc`:
 ```bash
 export PATH="$HOME/go/bin:$PATH"
 ```
@@ -70,14 +83,9 @@ export PATH="$HOME/go/bin:$PATH"
 New GitHub Release is created with [GoReleaser](https://goreleaser.com/ci/actions/) and GitHub Actions when a new tag is pushed to the repository.
 
 
-## Run binary release
-
-With the binary releases all you need is the configuration file described above and a binary for your platform.
-
-⚠️ The binaries in each release are built with [GoReleaser](https://goreleaser.com/ci/actions/) and GitHub Actions. They are not signed or notarized, so warnings may arise when you run the app. Run at your own risk.
-
-
 ## References
+
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/)
 
 ### Packages used
 
