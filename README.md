@@ -68,7 +68,7 @@ GOARCH=arm64 GOOS=darwin go build -o "../../build/azlogin"
 # For Windows AMD64
 GOARCH=amd64 GOOS=windows go build -o "../../build/azlogin.exe"
 ```
-There is a little helper script available for installation on macOS & ZHS. To install, run in project root:
+There is a little helper script available for installation on macOS & ZSH. To install, run in project root:
 ```bash
 # Runs the build too.
 ./install_azlogin.sh
