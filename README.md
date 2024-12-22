@@ -1,3 +1,6 @@
+![Go](https://shields.io/badge/Go-00ADD8?logo=Go&logoColor=FFF&style=flat-square)
+![Azure](https://shields.io/badge/Azure-0078D4?logo=Azure&logoColor=FFF&style=flat-square)
+
 # Azlogin
 
 Azure CLI login helper. You have multiple tenants to login to, but cannot remember the tenant IDs? Azlogin to the rescue!
