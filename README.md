@@ -9,7 +9,7 @@ Functionally & securitywise there is nothing too special; This is just a wrapper
 
 Running the app with the selected tenant will trigger `az login` flow for the selected tenant, and that's it.
 
-If you have configured `select_subscription: true` after successful login, a Subscription selection will be run.
+If you have configured `select_subscription: true`, a Subscription selection will be run after successful login.
 
 
 ## Prerequisites
