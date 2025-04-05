@@ -5,6 +5,28 @@ All notable changes to this template will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-04-05
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+- Fixed security issues in transitive dependencies:
+  - Fixed golang.org/x/net: HTTP Proxy bypass using IPv6 Zone IDs in golang.org/x/net
+  - Fixed github.com/golang-jwt/jwt/v5: allows excessive memory allocation during header parsing
+
+### Internal
+
+- Transitive dependency version bumps.
+
 ## [1.1.0] - 2025-04-05
 
 ### Added
