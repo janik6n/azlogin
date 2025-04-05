@@ -34,7 +34,7 @@ features:
         tenant_id: "alpha.onmicrosoft.com"
       - tenant_name: "Bravo"
         tenant_id: "23456-23456"
-  select_subscription: true|false
+    select_subscription: true|false
 ```
 Configuration file location:
 - If the `environment` is `DEV`: `./configuration.yaml`. You also need to set environment variable `ENVIRONMENT=DEV`.
