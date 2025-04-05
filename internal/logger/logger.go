@@ -45,26 +45,27 @@ func SetupLogger(c configuration.Configuration) error {
 	return nil
 }
 
-func LogInfo(info string, c configuration.Configuration) {
+func LogInfo(info string, funcName string, c configuration.Configuration) {
 	if c.General.Logging && c.General.LoggingLevel == "INFO" {
-		log.Println("INFO: ", info)
+		log.Printf("INFO: %s: %s", funcName, info)
 	}
 }
 
-func LogWarning(warning string, c configuration.Configuration) {
+func LogWarning(warning string, funcName string, c configuration.Configuration) {
 	if c.General.Logging && (c.General.LoggingLevel == "INFO" || c.General.LoggingLevel == "WARNING") {
-		log.Println("WARNING: ", warning)
+		log.Printf("WARNING: %s: %s", funcName, warning)
 	}
 }
 
-func LogError(err error, c configuration.Configuration) {
+func LogError(err error, funcName string, c configuration.Configuration) {
 	if c.General.Logging && (c.General.LoggingLevel == "INFO" || c.General.LoggingLevel == "WARNING" || c.General.LoggingLevel == "ERROR") {
-		log.Println("ERROR: ", err)
+		log.Printf("ERROR: %s: %s", funcName, err)
 	}
 }
 
-func LogFatal(err error, c configuration.Configuration) {
+func LogFatal(err error, funcName string, c configuration.Configuration) {
 	if c.General.Logging && (c.General.LoggingLevel == "INFO" || c.General.LoggingLevel == "WARNING" || c.General.LoggingLevel == "ERROR" || c.General.LoggingLevel == "FATAL") {
-		log.Fatal("FATAL: ", err)
+		message := fmt.Sprintf("FATAL: %s: %s", funcName, err)
+		log.Fatal("FATAL:", message)
 	}
 }

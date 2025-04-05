@@ -9,6 +9,8 @@ Functionally & securitywise there is nothing too special; This is just a wrapper
 
 Running the app with the selected tenant will trigger `az login` flow for the selected tenant, and that's it.
 
+If you have configured `select_subscription: true` after successful login, a Subscription selection will be run.
+
 
 ## Prerequisites
 
@@ -32,6 +34,7 @@ features:
         tenant_id: "alpha.onmicrosoft.com"
       - tenant_name: "Bravo"
         tenant_id: "23456-23456"
+  select_subscription: true|false
 ```
 Configuration file location:
 - If the `environment` is `DEV`: `./configuration.yaml`. You also need to set environment variable `ENVIRONMENT=DEV`.
@@ -89,9 +92,12 @@ New GitHub Release is created with [GoReleaser](https://goreleaser.com/ci/action
 ## References
 
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/)
+- [Package index for Azure SDK libraries for Go | Microsoft Learn](https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-library-package-index)
+
 
 ### Packages used
 
+- https://github.com/Azure/azure-sdk-for-go (License: MIT)
 - https://github.com/charmbracelet/huh for terminal UI (License: MIT)
 - https://github.com/charmbracelet/huh/spinner for terminal UI (License: MIT)
 - https://github.com/charmbracelet/lipgloss for terminal UI (License: MIT)
@@ -102,6 +108,7 @@ New GitHub Release is created with [GoReleaser](https://goreleaser.com/ci/action
 ## Changelog
 
 [CHANGELOG](CHANGELOG.md)
+
 
 ## License
 

@@ -29,7 +29,8 @@ type Features struct {
 }
 
 type AzLogin struct {
-	Tenants []Tenant `yaml:"tenants"`
+	Tenants            []Tenant `yaml:"tenants"`
+	SelectSubscription bool     `yaml:"select_subscription"`
 }
 
 type Tenant struct {
@@ -139,6 +140,9 @@ func (c Configuration) Print() string {
 		for _, tenant := range c.Features.AzLogin.Tenants {
 			composed += "  Tenant Name: " + tenant.TenantName + "\n" +
 				"    Tenant ID: " + tenant.TenantId + "\n"
+		}
+		if c.Features.AzLogin.SelectSubscription {
+			composed += "  Select Subscription: " + strconv.FormatBool(c.Features.AzLogin.SelectSubscription) + "\n"
 		}
 	}
 

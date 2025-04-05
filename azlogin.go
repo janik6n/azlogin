@@ -12,6 +12,7 @@ import (
 	"github.com/janik6n/azlogin/internal/configuration"
 	errorhandler "github.com/janik6n/azlogin/internal/error_handler"
 	"github.com/janik6n/azlogin/internal/logger"
+	selectsub "github.com/janik6n/azlogin/internal/select_sub"
 	"github.com/janik6n/azlogin/internal/utils"
 )
 
@@ -20,6 +21,7 @@ type Flow struct {
 }
 
 func RunCLI() {
+	funcName := "azlogin - RunCLI"
 	// Init the azloginilable commands
 	var flowChoices = []string{}
 
@@ -38,9 +40,9 @@ func RunCLI() {
 	if err != nil {
 		errorhandler.HandleFatalWithoutLogger("Error setting up logger", err, *config)
 	} else {
-		logger.LogInfo("----- Begin main -----", *config)
-		logger.LogInfo("Logger set up successfully", *config)
-		logger.LogInfo("Configuration loaded successfully:\n"+config.Print(), *config)
+		logger.LogInfo("----- Begin main -----", funcName, *config)
+		logger.LogInfo("Logger set up successfully", funcName, *config)
+		logger.LogInfo("Configuration loaded successfully:\n"+config.Print(), funcName, *config)
 	}
 
 	if len(config.Features.AzLogin.Tenants) > 0 {
@@ -55,7 +57,7 @@ func RunCLI() {
 	var options = huh.NewOptions(flowChoices...)
 
 	// Log available flows
-	logger.LogInfo("Available flows: "+utils.SliceOfStringsToString(flowChoices), *config)
+	logger.LogInfo("Available flows: "+utils.SliceOfStringsToString(flowChoices), funcName, *config)
 
 	// Should we run in accessible mode?
 	accessible, _ := strconv.ParseBool(os.Getenv("ACCESSIBLE"))
@@ -77,24 +79,35 @@ func RunCLI() {
 
 	switch flow.SelectedFlow {
 	case "Login to Azure cli":
-		logger.LogInfo("Selected flow: Login to Azure cli", *config)
-		azLoginResponse, err := azlogin.RunCommand(*config)
+		logger.LogInfo("Selected flow: Login to Azure cli", funcName, *config)
+		azLoginResponse, tenantId, err := azlogin.RunCommand(*config)
 		if err != nil {
 			errorhandler.HandleError("running Login to Azure cli flow", err, *config)
 		}
 		// would log garbage because of formatting
 		// logger.LogInfo("AWS Login response: "+awsLoginResponse, *config)
 		fmt.Println(azLoginResponse)
+
+		// if Features.AzLogin.SelectSubscription is enabled
+		if config.Features.AzLogin.SelectSubscription {
+			// run select subscription flow
+			logger.LogInfo("Select subscription", funcName, *config)
+			selectSubscriptionResponse, err := selectsub.RunCommand(tenantId, *config)
+			if err != nil {
+				errorhandler.HandleError("running Select subscription flow", err, *config)
+			}
+
+			fmt.Println(selectSubscriptionResponse)
+		}
 	case "About":
-		logger.LogInfo("Selected flow: About", *config)
+		logger.LogInfo("Selected flow: About", funcName, *config)
 		about, err := about.ShowAbout()
 		if err != nil {
 			errorhandler.HandleError("running About flow", err, *config)
 		}
-		// would log garbage because of formatting
-		// logger.LogInfo("About response: "+about, *config)
+
 		fmt.Println(about)
 	}
 
-	logger.LogInfo("----- Fin. -----", *config)
+	logger.LogInfo("----- Fin. -----", funcName, *config)
 }

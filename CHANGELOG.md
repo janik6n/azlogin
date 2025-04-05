@@ -5,6 +5,25 @@ All notable changes to this template will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-04-05
+
+### Added
+
+- Optionally let user choose Azure Subscription after successful login.
+- Improved logging.
+
+### Changed
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+### Internal
+
 ## [1.0.6] - 2025-04-03
 
 ### Added

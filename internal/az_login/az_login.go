@@ -19,18 +19,19 @@ type Tenant struct {
 	TenantName string
 }
 
-func RunCommand(c configuration.Configuration) (string, error) {
+func RunCommand(c configuration.Configuration) (string, string, error) {
+	funcName := "az_login - RunCommand"
 	// fmt.Println("Running az login...")
 	// fmt.Println("Tenants:")
 	// fmt.Println(c.GetAzTenantNames())
-	logger.LogInfo("Running az login...", c)
-	logger.LogInfo("Tenants: "+strings.Join(c.GetAzTenantNames(), ", "), c)
+	logger.LogInfo("Running az login...", funcName, c)
+	logger.LogInfo("Tenants: "+strings.Join(c.GetAzTenantNames(), ", "), funcName, c)
 
 	var tenantChoices = []string{}
 	if len(c.Features.AzLogin.Tenants) > 0 {
 		tenantChoices = c.GetAzTenantNames()
 	} else {
-		return "", errors.New("no az tenants configured")
+		return "", "", errors.New("no az tenants configured")
 	}
 
 	var tenant Tenant
@@ -51,31 +52,32 @@ func RunCommand(c configuration.Configuration) (string, error) {
 
 	err := tenantSelectionForm.Run()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	// fmt.Printf("\nSelected tenant:\n")
 	// fmt.Printf("  Tenant Name: %s\n", tenant.TenantName)
-	logger.LogInfo("Selected tenant: "+tenant.TenantName, c)
+	logger.LogInfo("Selected tenant: "+tenant.TenantName, funcName, c)
 	t, err := c.FindAzTenantByName(tenant.TenantName)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	// fmt.Printf("  Tenant Id: %s\n", t.TenantId)
-	logger.LogInfo("Tenant Id: "+t.TenantId, c)
+	logger.LogInfo("Tenant Id: "+t.TenantId, funcName, c)
 
-	response, err := AzLoginFlow(t)
+	response, tenantId, err := AzLoginFlow(t)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return response, nil
+	return response, tenantId, nil
 }
 
-func AzLoginFlow(t configuration.Tenant) (string, error) {
+func AzLoginFlow(t configuration.Tenant) (string, string, error) {
+	funcName := "az_login - AzLoginFlow"
 	loginCommand := fmt.Sprintf("az login --tenant %s", t.TenantId)
 	// fmt.Println(loginCommand)
-	logger.LogInfo(loginCommand, configuration.Configuration{})
+	logger.LogInfo(loginCommand, funcName, configuration.Configuration{})
 
 	// Login to az cli, pass the command output directly to stdout & stderr
 	args := strings.Split(loginCommand, " ")
@@ -84,7 +86,7 @@ func AzLoginFlow(t configuration.Tenant) (string, error) {
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	// Pretty print response
@@ -94,14 +96,16 @@ func AzLoginFlow(t configuration.Tenant) (string, error) {
 	}
 	fmt.Fprintf(&sb,
 		"%s\n\n✨ Tenant: %s 💫",
-		lipgloss.NewStyle().Bold(true).Render("Az login completed."),
+		lipgloss.NewStyle().Bold(true).Render("Az login completed successfully"),
 		keyword(t.TenantName),
 	)
 
-	return "\n" + lipgloss.NewStyle().
+	formattedMessage := "\n" + lipgloss.NewStyle().
 		Width(100).
 		BorderStyle(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("63")).
 		Padding(1, 2).
-		Render(sb.String()), nil
+		Render(sb.String())
+
+	return formattedMessage, t.TenantId, nil
 }

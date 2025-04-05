@@ -11,7 +11,8 @@ import (
 )
 
 func HandleError(message string, err error, c configuration.Configuration) {
-	logger.LogError(fmt.Errorf(message, err), c)
+	funcName := "error_handler - HandleError"
+	logger.LogError(fmt.Errorf(message, err), funcName, c)
 
 	// Pretty print response
 	var sb strings.Builder
@@ -32,7 +33,7 @@ func HandleError(message string, err error, c configuration.Configuration) {
 		Padding(1, 2).
 		Render(sb.String()))
 
-	logger.LogInfo("----- Fin with errors. -----", c)
+	logger.LogInfo("----- Fin with errors. -----", funcName, c)
 	os.Exit(1)
 }
 
@@ -45,8 +46,9 @@ func HandleFatalWithoutLogger(message string, err error, c configuration.Configu
 }
 
 func handleFatalinternal(message string, err error, c configuration.Configuration, hasLogger bool) {
+	funcName := "error_handler - handleFatalinternal"
 	if hasLogger {
-		logger.LogFatal(fmt.Errorf(message, err), c)
+		logger.LogFatal(fmt.Errorf(message, err), funcName, c)
 	}
 
 	// Pretty print response
@@ -69,7 +71,7 @@ func handleFatalinternal(message string, err error, c configuration.Configuratio
 		Render(sb.String()))
 
 	if hasLogger {
-		logger.LogInfo("----- Fin with fatal errors. -----", c)
+		logger.LogInfo("----- Fin with fatal errors. -----", funcName, c)
 	}
 	os.Exit(1)
 }
