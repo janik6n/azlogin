@@ -100,11 +100,12 @@ func (c Configuration) Validate() error {
 	}
 	if c.General.Logging &&
 		c.General.LoggingLevel != "INFO" &&
+		c.General.LoggingLevel != "WARNING" &&
 		c.General.LoggingLevel != "ERROR" &&
 		c.General.LoggingLevel != "FATAL" {
 		validationErrors = append(
 			validationErrors,
-			"general.logging_level must be one of INFO, ERROR, FATAL. Got: "+c.General.LoggingLevel,
+			"general.logging_level must be one of INFO, WARNING, ERROR, FATAL. Got: "+c.General.LoggingLevel,
 		)
 	}
 

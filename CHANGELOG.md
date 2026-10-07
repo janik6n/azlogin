@@ -5,6 +5,28 @@ All notable changes to this template will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-10-07
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Fixed
+
+- Subscription selection lists only subscriptions belonging to the tenant logged into. Tenants configured by domain name are resolved to their tenant ID.
+
+### Removed
+
+### Security
+
+- Subscription selection uses only Azure CLI credentials (`AzureCLICredential`) scoped to the selected tenant, instead of `DefaultAzureCredential`, which could pick up environment or managed identity credentials.
+
+### Internal
+
+- `github.com/google/uuid` is now a direct dependency.
+
 ## [1.1.4] - 2026-10-06
 
 ### Added

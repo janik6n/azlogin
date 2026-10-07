@@ -13,6 +13,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armsubscriptions"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/google/uuid"
 
 	"github.com/janik6n/azlogin/internal/configuration"
 	"github.com/janik6n/azlogin/internal/logger"
@@ -26,10 +27,15 @@ func RunCommand(tenantId string, c configuration.Configuration) (string, error) 
 
 	fmt.Printf("\nFetching Subscriptions for tenantId: %s\n", tenantId)
 
-	// List Azure subscriptions
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	tenantGUID, err := resolveTenantGUID(tenantId)
 	if err != nil {
-		return "", errors.New("No Azure credentials found within DefaultAzureCredential, " + err.Error())
+		return "", errors.New("Could not resolve tenant ID, " + err.Error())
+	}
+
+	// List Azure subscriptions
+	cred, err := azidentity.NewAzureCLICredential(&azidentity.AzureCLICredentialOptions{TenantID: tenantGUID})
+	if err != nil {
+		return "", errors.New("Could not get Azure CLI credentials, " + err.Error())
 	}
 	// Create a context for the operation
 	ctx := context.Background()
@@ -54,6 +60,9 @@ func RunCommand(tenantId string, c configuration.Configuration) (string, error) 
 
 		// Print subscription details
 		for _, subscription := range page.Value {
+			if subscription.TenantID == nil || !strings.EqualFold(*subscription.TenantID, tenantGUID) {
+				continue
+			}
 			logger.LogInfo(fmt.Sprintf("Subscription ID: %s, Subscription Name: %s", *subscription.SubscriptionID, *subscription.DisplayName), funcName, c)
 			subscriptionList = append(subscriptionList, fmt.Sprintf("%s | %s", *subscription.DisplayName, *subscription.SubscriptionID))
 		}
@@ -89,6 +98,18 @@ func RunCommand(tenantId string, c configuration.Configuration) (string, error) 
 	} else {
 		return "", errors.New("No subscriptions found for tenantId: " + tenantId)
 	}
+}
+
+// Subscriptions report the tenant as a GUID, but the configured tenant may be a domain name.
+func resolveTenantGUID(tenantId string) (string, error) {
+	if _, err := uuid.Parse(tenantId); err == nil {
+		return tenantId, nil
+	}
+	out, err := exec.Command("az", "account", "show", "--query", "tenantId", "--output", "tsv").Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
 }
 
 func SelectSubscriptionFlow(s string) (string, error) {
