@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - "Subscription selected" summary also shows the tenant and user.
+- Subscription picker is searchable and shows a limited number of rows at a time.
 
 ### Deprecated
 

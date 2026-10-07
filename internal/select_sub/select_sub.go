@@ -76,7 +76,9 @@ func RunCommand(tenantId string, c configuration.Configuration) (string, error) 
 				huh.NewSelect[string]().
 					Options(options...).
 					Title("Choose Subscription").
-					Description("Which Subscription to select?").
+					Description("Which Subscription to select? Press / to search.").
+					Filtering(true).
+					Height(15).
 					Value(&selectedSubscription),
 			),
 		).WithAccessible(accessible)
