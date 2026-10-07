@@ -7,7 +7,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armsubscriptions v1.3.0
 	github.com/charmbracelet/huh v1.0.0
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/google/uuid v1.6.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -31,6 +30,7 @@ require (
 	github.com/dustin/go-humanize v1.1.0 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect

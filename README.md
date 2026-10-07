@@ -11,6 +11,16 @@ Running the app with the selected tenant will trigger `az login` flow for the se
 
 If you have configured `select_subscription: true`, a Subscription selection will be run after successful login.
 
+## Features
+
+- **Login to Azure CLI**: Choose a tenant by name from your configuration and run `az login` for it. Tenants can be configured by tenant ID or domain name.
+- **Session reuse**: If Azure CLI still has a valid session for the selected tenant, the existing session is reused and that tenant is made active, skipping `az login`.
+- **Subscription selection after login**: With `select_subscription: true`, choose a Subscription of the logged-in tenant right after login.
+- **Select subscription**: Change the Subscription within the current tenant without logging in again. If you are not logged in, you are asked to log in first.
+- **Show current login**: Show the current Subscription, tenant and user.
+- **Logout**: Log out the current account, or all accounts.
+- **About**: Show the app version and a link to the changelog.
+- **Accessible mode**: Set environment variable `ACCESSIBLE=true` to run the menus in accessible mode.
 
 ## Prerequisites
 

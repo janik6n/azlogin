@@ -1,17 +1,21 @@
 package azlogin
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"strconv"
 
 	"github.com/charmbracelet/huh"
 
 	"github.com/janik6n/azlogin/internal/about"
+	"github.com/janik6n/azlogin/internal/account"
 	azlogin "github.com/janik6n/azlogin/internal/az_login"
 	"github.com/janik6n/azlogin/internal/configuration"
 	errorhandler "github.com/janik6n/azlogin/internal/error_handler"
 	"github.com/janik6n/azlogin/internal/logger"
+	"github.com/janik6n/azlogin/internal/logout"
 	selectsub "github.com/janik6n/azlogin/internal/select_sub"
 	"github.com/janik6n/azlogin/internal/utils"
 )
@@ -45,14 +49,21 @@ func RunCLI() {
 		logger.LogInfo("Configuration loaded successfully:\n"+config.Print(), funcName, *config)
 	}
 
+	if _, err := exec.LookPath("az"); err != nil {
+		errorhandler.HandleFatal(
+			"Azure CLI is required, install it from https://learn.microsoft.com/en-us/cli/azure/install-azure-cli",
+			errors.New("Azure CLI (az) was not found in PATH"),
+			*config,
+		)
+	}
+
 	if len(config.Features.AzLogin.Tenants) > 0 {
 		flowChoices = append(flowChoices, "Login to Azure cli")
 	}
 
 	var flow Flow
 
-	// Always append About command
-	flowChoices = append(flowChoices, "About")
+	flowChoices = append(flowChoices, "Select subscription", "Show current login", "Logout", "About")
 
 	var options = huh.NewOptions(flowChoices...)
 
@@ -99,6 +110,44 @@ func RunCLI() {
 
 			fmt.Println(selectSubscriptionResponse)
 		}
+	case "Select subscription":
+		logger.LogInfo("Selected flow: Select subscription", funcName, *config)
+		tenantId := ""
+		// az account show succeeds from cache even when the session has expired, so verify the token too.
+		if current, err := account.Show(); err == nil {
+			if _, err := account.TenantGUID(current.TenantID); err == nil {
+				tenantId = current.TenantID
+			}
+		}
+		if tenantId == "" {
+			logger.LogInfo("No active session, running Login to Azure cli flow", funcName, *config)
+			fmt.Println("No active Azure CLI session, login first.")
+			azLoginResponse, loggedInTenantId, err := azlogin.RunCommand(*config)
+			if err != nil {
+				errorhandler.HandleError("running Login to Azure cli flow", err, *config)
+			}
+			fmt.Println(azLoginResponse)
+			tenantId = loggedInTenantId
+		}
+		selectSubscriptionResponse, err := selectsub.RunCommand(tenantId, *config)
+		if err != nil {
+			errorhandler.HandleError("running Select subscription flow", err, *config)
+		}
+		fmt.Println(selectSubscriptionResponse)
+	case "Show current login":
+		logger.LogInfo("Selected flow: Show current login", funcName, *config)
+		current, err := account.Show()
+		if err != nil {
+			errorhandler.HandleError("getting current login", err, *config)
+		}
+		fmt.Println(account.Render("Current login", current))
+	case "Logout":
+		logger.LogInfo("Selected flow: Logout", funcName, *config)
+		logoutResponse, err := logout.RunCommand(*config)
+		if err != nil {
+			errorhandler.HandleError("running Logout flow", err, *config)
+		}
+		fmt.Println(logoutResponse)
 	case "About":
 		logger.LogInfo("Selected flow: About", funcName, *config)
 		about, err := about.ShowAbout()

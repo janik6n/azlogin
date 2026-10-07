@@ -66,6 +66,6 @@ func LogError(err error, funcName string, c configuration.Configuration) {
 func LogFatal(err error, funcName string, c configuration.Configuration) {
 	if c.General.Logging && (c.General.LoggingLevel == "INFO" || c.General.LoggingLevel == "WARNING" || c.General.LoggingLevel == "ERROR" || c.General.LoggingLevel == "FATAL") {
 		message := fmt.Sprintf("FATAL: %s: %s", funcName, err)
-		log.Fatal("FATAL:", message)
+		log.Print(message)
 	}
 }

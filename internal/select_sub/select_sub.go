@@ -5,16 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armsubscriptions"
 	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/google/uuid"
 
+	"github.com/janik6n/azlogin/internal/account"
 	"github.com/janik6n/azlogin/internal/configuration"
 	"github.com/janik6n/azlogin/internal/logger"
 )
@@ -27,9 +25,9 @@ func RunCommand(tenantId string, c configuration.Configuration) (string, error) 
 
 	fmt.Printf("\nFetching Subscriptions for tenantId: %s\n", tenantId)
 
-	tenantGUID, err := resolveTenantGUID(tenantId)
+	tenantGUID, err := account.TenantGUID(tenantId)
 	if err != nil {
-		return "", errors.New("Could not resolve tenant ID, " + err.Error())
+		return "", errors.New("No valid Azure CLI session for tenant, " + err.Error())
 	}
 
 	// List Azure subscriptions
@@ -100,18 +98,6 @@ func RunCommand(tenantId string, c configuration.Configuration) (string, error) 
 	}
 }
 
-// Subscriptions report the tenant as a GUID, but the configured tenant may be a domain name.
-func resolveTenantGUID(tenantId string) (string, error) {
-	if _, err := uuid.Parse(tenantId); err == nil {
-		return tenantId, nil
-	}
-	out, err := exec.Command("az", "account", "show", "--query", "tenantId", "--output", "tsv").Output()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(out)), nil
-}
-
 func SelectSubscriptionFlow(s string) (string, error) {
 	funcName := "select_sub - SelectSubscriptionFlow"
 
@@ -120,39 +106,17 @@ func SelectSubscriptionFlow(s string) (string, error) {
 	if len(parts) != 2 {
 		return "", fmt.Errorf("invalid subscription format: %s. Expected name | id", s)
 	}
-	subscriptionName := parts[0]
 	subscriptionID := parts[1]
 
-	// Set the subscription using az cli
-	setSubscriptionCommand := fmt.Sprintf("az account set --subscription %s", subscriptionID)
-	logger.LogInfo(setSubscriptionCommand, funcName, configuration.Configuration{})
+	logger.LogInfo("az account set --subscription "+subscriptionID, funcName, configuration.Configuration{})
+	if err := account.SetSubscription(subscriptionID); err != nil {
+		return "", err
+	}
 
-	// Login to az cli, pass the command output directly to stdout & stderr
-	args := strings.Split(setSubscriptionCommand, " ")
-	cmd := exec.Command(args[0], args[1:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	a, err := account.Show()
 	if err != nil {
 		return "", err
 	}
 
-	// Pretty print response
-	var sb strings.Builder
-	keyword := func(s string) string {
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Render(s)
-	}
-	fmt.Fprintf(&sb,
-		"%s\n\n✨ Subscription: %s 💫\n\n📌 ID: %s",
-		lipgloss.NewStyle().Bold(true).Render("Subscription selected"),
-		keyword(subscriptionName),
-		subscriptionID,
-	)
-
-	return "\n" + lipgloss.NewStyle().
-		Width(100).
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("63")).
-		Padding(1, 2).
-		Render(sb.String()), nil
+	return account.Render("Subscription selected", a), nil
 }

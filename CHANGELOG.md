@@ -5,6 +5,34 @@ All notable changes to this template will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-07
+
+### Added
+
+- "Select subscription" command to change the subscription within the current tenant without logging in again. If there is no active session, the login flow is run first.
+- "Show current login" command to show the current subscription, tenant and user.
+- Login reuses an existing valid Azure CLI session for the selected tenant instead of running `az login` again.
+- "Logout" command to log out the current account (`az logout`) or all accounts (`az account clear`).
+- Clear error message if Azure CLI (`az`) is not found in PATH.
+
+### Changed
+
+- "Subscription selected" summary also shows the tenant and user.
+
+### Deprecated
+
+### Fixed
+
+- Fatal error message was not shown when logging was enabled.
+
+### Removed
+
+### Security
+
+### Internal
+
+- `github.com/google/uuid` is no longer a direct dependency.
+
 ## [1.1.5] - 2026-10-07
 
 ### Added

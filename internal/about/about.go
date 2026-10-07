@@ -8,7 +8,7 @@ import (
 )
 
 func GetVersion() string {
-	return "v1.1.5"
+	return "v1.2.0"
 }
 
 func ShowAbout() (string, error) {

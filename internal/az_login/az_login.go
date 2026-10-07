@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 
+	"github.com/janik6n/azlogin/internal/account"
 	"github.com/janik6n/azlogin/internal/configuration"
 	"github.com/janik6n/azlogin/internal/logger"
 )
@@ -75,17 +76,12 @@ func RunCommand(c configuration.Configuration) (string, string, error) {
 
 func AzLoginFlow(t configuration.Tenant) (string, string, error) {
 	funcName := "az_login - AzLoginFlow"
-	loginCommand := fmt.Sprintf("az login --tenant %s", t.TenantId)
-	// fmt.Println(loginCommand)
-	logger.LogInfo(loginCommand, funcName, configuration.Configuration{})
 
-	// Login to az cli, pass the command output directly to stdout & stderr
-	args := strings.Split(loginCommand, " ")
-	cmd := exec.Command(args[0], args[1:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
+	title := "Az login completed successfully"
+	if reuseSession(t.TenantId) {
+		logger.LogInfo("Reusing existing session for tenant "+t.TenantId, funcName, configuration.Configuration{})
+		title = "Existing Az session reused"
+	} else if err := azLogin(t.TenantId, funcName); err != nil {
 		return "", "", err
 	}
 
@@ -96,7 +92,7 @@ func AzLoginFlow(t configuration.Tenant) (string, string, error) {
 	}
 	fmt.Fprintf(&sb,
 		"%s\n\n✨ Tenant: %s 💫",
-		lipgloss.NewStyle().Bold(true).Render("Az login completed successfully"),
+		lipgloss.NewStyle().Bold(true).Render(title),
 		keyword(t.TenantName),
 	)
 
@@ -108,4 +104,28 @@ func AzLoginFlow(t configuration.Tenant) (string, string, error) {
 		Render(sb.String())
 
 	return formattedMessage, t.TenantId, nil
+}
+
+// reuseSession makes the tenant active without a new login if Azure CLI still has a valid session for it.
+func reuseSession(tenantId string) bool {
+	tenantGUID, err := account.TenantGUID(tenantId)
+	if err != nil {
+		return false
+	}
+	if current, err := account.Show(); err == nil && strings.EqualFold(current.TenantID, tenantGUID) {
+		return true
+	}
+	subs, err := account.SubscriptionIDsInTenant(tenantGUID)
+	if err != nil || len(subs) == 0 {
+		return false
+	}
+	return account.SetSubscription(subs[0]) == nil
+}
+
+func azLogin(tenantId string, funcName string) error {
+	logger.LogInfo("az login --tenant "+tenantId, funcName, configuration.Configuration{})
+	cmd := exec.Command("az", "login", "--tenant", tenantId)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
