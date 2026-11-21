@@ -111,7 +111,7 @@ New GitHub Release is created with [GoReleaser](https://goreleaser.com/ci/action
 - https://github.com/charmbracelet/huh for terminal UI (License: MIT)
 - https://github.com/charmbracelet/huh/spinner for terminal UI (License: MIT)
 - https://github.com/charmbracelet/lipgloss for terminal UI (License: MIT)
-- https://github.com/go-yaml/yaml for reading and writing YAML files (License: MIT & Apache 2.0)
+- https://github.com/yaml/go-yaml for reading and writing YAML files (License: MIT & Apache 2.0)
 - https://github.com/natefinch/lumberjack for logging (License: MIT)
 
 

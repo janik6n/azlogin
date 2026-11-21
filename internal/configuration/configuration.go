@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v4"
 
 	"github.com/janik6n/azlogin/internal/utils"
 )
